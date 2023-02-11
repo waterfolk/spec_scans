@@ -128,6 +128,29 @@
     "AH5", "arm2", "A2"
   )
   
+  scansamples <- tribble(
+    ~scanlabelshort, ~samplelabel, ~samplecode,
+    "01", "T1", "0927-16",
+    "02", "T2bad", "0922-16",
+    "03", "T2", "0922-16",
+    "04", "T3", "0921-16",
+    "05", "T4", "0598-16",
+    "06", "T5", "0913-16",
+    "07", "T6", "0914-16",
+    "08", "T7", "0917-16",
+    "09", "T8", "0918-16",
+    "10", "T9", "0925-16",
+    "11", "T10", "0596-16",
+    "12", "T11", "0926-16",
+    "13", "T12", "0924-16",
+    "14", "T13", "0602-16",
+    "15", "T14", "0595-16",
+    "16", "T15", "0593-16",
+    "17", "T16", "0599-16",
+    "18", "DI", "DI",
+    "19", "T13dup", "0602-16"
+  )
+  
 
   # 2. Read in data files ------------------------------------------
   
@@ -143,21 +166,25 @@
   
   df<-df %>% dplyr::select(wvl,abs)
   df$file<-unlist(lapply(datafiles,FUN="rep",nrows))
-  df$label<-gsub(".ASC","",df$file)
-  df$labelshort<-substr(df$label,nchar(df$label)-1,nchar(df$label))
+  df$scanlabel<-gsub(".ASC","",df$file)
+  df$scanlabelshort<-substr(df$scanlabel,nchar(df$scanlabel)-1,nchar(df$scanlabel))
   
   
-  dataSabine0<-df[grep("SAB",df$label),]
-  dataSabine<-dataSabine0 %>% dplyr::filter(!labelshort %in% c("18","19"))
+  dataSabine0<-df[grep("SAB",df$scanlabel),]
+  dataSabine0<-merge(dataSabine0,scansamples,by=c("scanlabelshort","scanlabelshort"),all=TRUE)
+  dataSabine0$samplelabel<-gsub("T","",dataSabine0$samplelabel) %>% as.numeric()
   
-  dataSabine_DI<-dataSabine0 %>% dplyr::filter(labelshort=="18")
-  dataSabine_labdup<-dataSabine0 %>% dplyr::filter(labelshort=="19")
+  dataSabine<-dataSabine0 %>% dplyr::filter(!scanlabelshort %in% c("02","18","19"))
+  
+  dataSabine_DI<-dataSabine0 %>% dplyr::filter(scanlabelshort=="18")
+  dataSabine_labdup16<-dataSabine0 %>% dplyr::filter(scanlabelshort=="19")
   
   dataplot<-dataSabine
   
   plotit<-dataplot %>%
-    ggplot(aes(x=wvl,y=abs,color=labelshort)) +
+    ggplot(aes(x=wvl,y=log10(abs),color=as.factor(samplelabel))) +
     geom_point()+
+    guides(color=guide_legend("location"))+
     theme_bw()
   plotit
   
