@@ -116,13 +116,17 @@
   dataplot$site<-factor(dataplot$site,c("North arm","South arm","Dam"))
 #  dataplot$site<-as.factor(c("North arm","South arm","Dam"))
 #  dataplot$site<-factor(dataplot$site,relevel(dataplot$site,"North arm"))
-  plotit<-dataplot %>%
-    ggplot(aes(x=wvl,y=log10(abs),color=site)) +
+  
+  
+  plotit<-dataplot %>% filter(wvl>=220 & wvl<=750) %>%
+#    ggplot(aes(x=wvl,y=log10(abs),color=site)) +
+   ggplot(aes(x=wvl,y=(abs/0.01),color=site)) +
     scale_color_viridis_d()+
     geom_point()+
-    xlim(220,750)+
-    xlab("wavelength (nm)")+
-    ylab("log10 absorbance")+
+#    xlim(220,750)+
+    xlab("Wavelength (nm)")+
+    ylab(expression(paste("Absorption coefficient (", m^-1,")")))+
+#    ylab("log10 absorbance")+
 #    facet_wrap(~sitename)+
     theme_bw()
   plotit
