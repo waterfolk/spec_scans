@@ -108,12 +108,15 @@
     "LWNOV006","South arm upper",31.52896,	-97.23724
   )
   dataplot<-merge(dataplot,latlon,by.x="scanlabel",by.y="site")
+#  dataplot$sitename[which(dataplot$sitename=="Dam")]<"Main body"
 
   dataplot<-dataplot %>% filter(sitename %in% c("Dam","South arm upper","North arm middle"))
   dataplot<-dataplot %>% mutate(site=sitename)
   dataplot$site[which(dataplot$site=="North arm middle")]<-"North arm"
   dataplot$site[which(dataplot$site=="South arm upper")]<-"South arm"
   dataplot$site<-factor(dataplot$site,c("North arm","South arm","Dam"))
+
+  
 #  dataplot$site<-as.factor(c("North arm","South arm","Dam"))
 #  dataplot$site<-factor(dataplot$site,relevel(dataplot$site,"North arm"))
   
